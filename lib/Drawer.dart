@@ -55,40 +55,39 @@ class _MyStateWidget extends State<MyStateWidget> {
           )
         ],
       ),
-
-      body: Listener(
-        // 不能阻止冒泡功能.
-        onPointerDown: (e){
-          print('pointer down');
+      bottomNavigationBar: BottomNavigationBar(
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+              icon: Icon(Icons.airport_shuttle), title: Text('bus')),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.airplanemode_active), title: Text('plane')),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.directions_run), title: Text('My'))
+        ],
+        currentIndex: this.currentIndex,
+        onTap: (index) {
+          setState(() {
+            // setState 改变状态并刷新状态
+            this.currentIndex = index;
+          });
         },
-        onPointerCancel: (e){
-          print('pointer cancel');
-        },
-        onPointerExit: (e){
-          print('pointer exit');
-        },
-        onPointerEnter: (e){
-          print('pointer enter');
-        },
-        onPointerHover:(e){
-          print('pointer hover');
-        },
-        onPointerMove: (e){
-          print('pointer move');
-        },
-        onPointerSignal: (e){
-          print('pointer signal');
-        },
-        onPointerUp: (e){
-          print('pointer up');
-        },
-        child: Container(
-          height: 200,
-          width: 200,
-          color: Colors.cyan,
+      ),
+      drawer: Container( // 这其实是一个业务Class
+        width: 300,
+        color: Colors.cyan,
+        child: Column(
+          children: <Widget>[
+            Text('抽屉内容区域')
+          ],
         ),
-      )
-
+      ),
+      body: this.pageList[this.currentIndex],
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () {
+          print('you clicked the +');
+        },
+      ),
     );
   }
 }
