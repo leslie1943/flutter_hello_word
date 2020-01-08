@@ -3,11 +3,14 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:convert' as convert;
+import 'package:flutter_hello_word/biz/Home.dart';
+
 
 class Login extends StatelessWidget {
   Login({Key key}) : super(key: key);
   final GlobalKey _formKey = new GlobalKey<FormState>();
-  // 赋值给某个元素
+  final GlobalKey _scaffoldKey = GlobalKey<ScaffoldState>();
+  // 赋值给表单元素
   final TextEditingController _passwordController = new TextEditingController();
   final TextEditingController _userNameController = new TextEditingController();
   @override
@@ -76,19 +79,21 @@ class Login extends StatelessWidget {
                           // 转译结果
                           var res = convert.jsonDecode(response.toString());
                           if (res["status"] == 1) {
+//                            跳转
                             Fluttertoast.showToast(
                                 msg: '登录成功',
                                 toastLength: Toast.LENGTH_LONG,
                                 gravity: ToastGravity.CENTER,
-                                timeInSecForIos: 2,
+                                timeInSecForIos: 1,
                                 backgroundColor: Colors.green,
                                 textColor: Colors.white);
+                            Navigator.push(context,new MaterialPageRoute(builder: (context) => new Home()));
                           } else {
                             Fluttertoast.showToast(
                                 msg: '登录失败',
                                 toastLength: Toast.LENGTH_LONG,
                                 gravity: ToastGravity.CENTER,
-                                timeInSecForIos: 2,
+                                timeInSecForIos: 1,
                                 backgroundColor: Colors.red,
                                 textColor: Colors.white);
                           }
