@@ -4,7 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:convert' as convert;
 import 'package:flutter_hello_word/biz/Home.dart';
-
+import 'package:flutter_hello_word/common/Loading.dart';
+import 'package:flutter_hello_word/utils/storage_util.dart';
 
 class Login extends StatelessWidget {
   Login({Key key}) : super(key: key);
@@ -64,22 +65,27 @@ class Login extends StatelessWidget {
                       textColor: Colors.white,
                       onPressed: () async {
                         if ((_formKey.currentState as FormState).validate()) {
+                          Loading loading = Loading(context);
+                          loading.show();
                           // Get parameters
                           var data = {
                             "identifier": _userNameController.text,
                             "password": _passwordController.text,
-                            "captchaCode": ""
                           };
                           Dio dio = new Dio();
                           // parameter 1: request path
                           // parameter 2: request parameters
                           Response response = await dio.post(
-                              'https://epro-hospital.test.viewchain.net/epro/auth/login',
-                              data: data);
+                            'https://epro-op.test.viewchain.net/opapi/auth/login?identifier=${data['identifier']}&password=${data['password']}',
+                          );
                           // 转译结果
                           var res = convert.jsonDecode(response.toString());
                           if (res["status"] == 1) {
-//                            跳转
+                            // 设置登录token
+                            StorageUtil.setStringItem(
+                                'token', res['result']['token']);
+                            loading.close();
+                            // 跳转
                             Fluttertoast.showToast(
                                 msg: '登录成功',
                                 toastLength: Toast.LENGTH_LONG,
@@ -87,7 +93,10 @@ class Login extends StatelessWidget {
                                 timeInSecForIos: 1,
                                 backgroundColor: Colors.green,
                                 textColor: Colors.white);
-                            Navigator.push(context,new MaterialPageRoute(builder: (context) => new Home()));
+                            Navigator.push(
+                                context,
+                                new MaterialPageRoute(
+                                    builder: (context) => new Home()));
                           } else {
                             Fluttertoast.showToast(
                                 msg: '登录失败',
