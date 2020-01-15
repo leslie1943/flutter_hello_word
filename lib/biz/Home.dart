@@ -48,7 +48,7 @@ class _HomeState extends State<Home> {
           new BottomNavigationBarItem(
               activeIcon: new Icon(Icons.apps, color: Colors.white),
               icon: new Icon(Icons.apps,color: Colors.blueGrey),
-              title: Text('权限管理'),
+              title: Text('代码测试'),
               backgroundColor: Colors.blue),
         ],
         currentIndex: _currentIndex,

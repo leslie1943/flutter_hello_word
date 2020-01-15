@@ -69,7 +69,7 @@ class _ServiceFeeState extends State<ServiceFee> {
       {'name':'未设置'},
       {'name':'线上付款'},
       {'name':'线下付款'},
-      {'name':'OK'}
+      {'name':'自动'}
     ];
 //    List<Widget> tiles = new List<Widget>();
     Widget content; // 单独的一个widget组件,返回需要生成的内容

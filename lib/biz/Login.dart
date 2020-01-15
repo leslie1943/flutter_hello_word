@@ -18,7 +18,7 @@ class Login extends StatelessWidget {
   Widget build(BuildContext context) {
     return new Scaffold(
         appBar: AppBar(
-          title: new Text('易普优采'),
+          title: new Text('易普运营'),
           centerTitle: true,
         ),
         body: Builder(builder: (BuildContext context) {
@@ -30,8 +30,7 @@ class Login extends StatelessWidget {
                   Container(
                     child: Image.asset('static/image/epro.jpg'),
                   ),
-                  Container(
-                      child: Form(
+                  Container(child: Form(
                     key: _formKey,
                     child: Column(
                       children: <Widget>[
