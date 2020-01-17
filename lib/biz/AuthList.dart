@@ -8,19 +8,25 @@ class AuthList extends StatelessWidget {
           title: Text('代码测试'),
           centerTitle: true,
         ),
-        body: Padding(
-          // 下面4种都可以实现上下左右padding 20效果
-          padding: EdgeInsets.all(20.0),
-          // padding: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),
-          // padding: EdgeInsets.only(left: 20.0,top: 20.0,right: 20.0,bottom: 20.0),
-          // padding: EdgeInsets.symmetric(horizontal: 20.0,vertical: 20.0),
-          child: Container(
-            height: 100,
-            width: 200,
-            color: Colors.green,
-            child: Text('我被padding了20px',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white)),
+        body: Container(
+          margin: EdgeInsets.all(20.0),
+          child: DecoratedBox(
+            // decoration
+            decoration: BoxDecoration(
+                gradient:
+                    LinearGradient(colors: [Colors.redAccent, Colors.blue]),
+                borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                boxShadow: [ // 数组
+                  BoxShadow(
+                      color: Colors.black45, // 阴影颜色
+                      offset: Offset(20.0, 80.0), // 阴影与容器的距离, x轴,y轴
+                      blurRadius: 6.0),
+                // // 模糊程度
+                ]),
+            // the decorated container.
+            child: Container(
+              height: 200.0,
+            ),
           ),
         ));
   }
