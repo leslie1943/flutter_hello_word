@@ -34,15 +34,13 @@ class _ServiceFeeState extends State<ServiceFee> {
       loading.show();
       Dio dio = new Dio();
       var data = {
-        'status':[1,2,3,7],
-        'pagination':{
-          'pageSize':500,
-          'pageNo':1
-        }
+        'status': [1, 2, 3, 7],
+        'pagination': {'pageSize': 500, 'pageNo': 1}
       };
       response = await dio.post(
           'https://epro-op.test.viewchain.net/opapi/api/serviceFee/getServiceFeeList',
-          options: options,data:data);
+          options: options,
+          data: data);
       print('response');
       print(response);
       var res = convert.jsonDecode(response.toString());
@@ -65,23 +63,36 @@ class _ServiceFeeState extends State<ServiceFee> {
 
   Widget _buildList() {
     List<Widget> tiles = [];
+    int counter =1;
     final pays = [
-      {'name':'未设置'},
-      {'name':'线上付款'},
-      {'name':'线下付款'},
-      {'name':'自动'}
+      {'name': '未设置'},
+      {'name': '线上付款'},
+      {'name': '线下付款'},
+      {'name': '自动'}
     ];
 //    List<Widget> tiles = new List<Widget>();
     Widget content; // 单独的一个widget组件,返回需要生成的内容
     if (this.formList != null) {
       for (var item in this.formList) {
-        print(item);
-        tiles.add(new ListTile(
-//          isThreeLine: true,
-          leading: item['status'] == 3 ? Icon(Icons.tag_faces, size: 30, color: Colors.green) : Icon(Icons.add_alert, size: 30, color: Colors.orangeAccent),
-          title: Text('${item["feeNo"]} -- ${pays[item['payMethod']]['name']}'),
-          subtitle: Text('${item['supplierName']} : ${item['feeAmount']}元'),
-        ));
+        if (!(item['status'] == 3 || item['feeAmount'] == 0)) {
+          tiles.add(new ListTile(
+            leading: item['status'] == 3
+                ? Icon(Icons.tag_faces, size: 30, color: Colors.green)
+                : Icon(Icons.add_alert, size: 30, color: Colors.orangeAccent),
+            title:
+                Text('${counter.toString() + ':' + item["feeNo"]} -- ${pays[item['payMethod']]['name']}'),
+            subtitle: Text('${item['supplierName']} : ${item['feeAmount']}元'),
+            trailing: Icon(Icons.keyboard_arrow_right),
+            onTap:  (){
+              print('item on tap');
+              print(item);
+            },
+          ));
+          counter++;
+        }else{
+          print('已完成收费或无需收费');
+          print(item);
+        }
       }
       tiles.add(new Container(
         child: RaisedButton(
@@ -97,6 +108,10 @@ class _ServiceFeeState extends State<ServiceFee> {
         children: tiles,
       );
       return content;
+    }else{
+      return new Center(
+        child: Text('暂无数据'),
+      );
     }
   }
 
