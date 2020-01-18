@@ -9,25 +9,21 @@ class AuthList extends StatelessWidget {
           centerTitle: true,
         ),
         body: Container(
-          margin: EdgeInsets.all(20.0),
-          child: DecoratedBox(
-            // decoration
-            decoration: BoxDecoration(
-                gradient:
-                    LinearGradient(colors: [Colors.redAccent, Colors.blue]),
-                borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                boxShadow: [ // 数组
-                  BoxShadow(
-                      color: Colors.black45, // 阴影颜色
-                      offset: Offset(20.0, 80.0), // 阴影与容器的距离, x轴,y轴
-                      blurRadius: 6.0),
-                // // 模糊程度
-                ]),
-            // the decorated container.
+          height: 100.0,
+          width: 100.0,
+          color: Colors.black26,
+          child: OverflowBox(
+            maxWidth: 80.0,
+            minWidth: 50.0,
+            minHeight: 50.0,
+            maxHeight: 80.0,
             child: Container(
+              width: 100.0,
               height: 200.0,
+              color: Colors.blue,
             ),
           ),
-        ));
+        )
+    );
   }
 }

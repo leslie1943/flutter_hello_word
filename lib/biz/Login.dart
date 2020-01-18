@@ -58,56 +58,59 @@ class Login extends StatelessWidget {
                               icon: Icon(Icons.remove_red_eye)),
                           obscureText: true,
                         ),
-                        RaisedButton(
-                          child: Text('Login'),
-                          color: Colors.blue,
-                          highlightColor:Colors.yellow,
-                          textColor: Colors.white,
-                          onPressed: () async {
-                            if ((_formKey.currentState as FormState)
-                                .validate()) {
-                              Loading loading = Loading(context);
-                              loading.show();
-                              // Get parameters
-                              var data = {
-                                "identifier": _userNameController.text,
-                                "password": _passwordController.text,
-                              };
-                              Dio dio = new Dio();
-                              // parameter 1: request path
-                              // parameter 2: request parameters
-                              Response response = await dio.post(
-                                'https://epro-op.test.viewchain.net/opapi/auth/login?identifier=${data['identifier']}&password=${data['password']}',
-                              );
-                              // 转译结果
-                              var res = convert.jsonDecode(response.toString());
-                              if (res["status"] == 1) {
-                                // 设置登录token
-                                StorageUtil.setStringItem(
-                                    'token', res['result']['token']);
-                                loading.close();
-                                final snackBar = SnackBar(
-                                  duration: Duration(seconds: 1),
-                                  content: Text('登录成功!'),
-                                  backgroundColor: Colors.green,
+                        Container(
+                          padding: EdgeInsets.only(top: 30.0),
+                          child:  RaisedButton(
+                            child: Text('Login'),
+                            color: Colors.blue,
+                            highlightColor:Colors.yellow,
+                            textColor: Colors.white,
+                            onPressed: () async {
+                              if ((_formKey.currentState as FormState)
+                                  .validate()) {
+                                Loading loading = Loading(context);
+                                loading.show();
+                                // Get parameters
+                                var data = {
+                                  "identifier": _userNameController.text,
+                                  "password": _passwordController.text,
+                                };
+                                Dio dio = new Dio();
+                                // parameter 1: request path
+                                // parameter 2: request parameters
+                                Response response = await dio.post(
+                                  'https://epro-op.test.viewchain.net/opapi/auth/login?identifier=${data['identifier']}&password=${data['password']}',
                                 );
-                                Scaffold.of(context).showSnackBar(snackBar);
-                                Navigator.push(
-                                    context,
-                                    new MaterialPageRoute(
-                                        builder: (context) => new Home()));
-                              } else {
-                                loading.close();
-                                final snackBar = SnackBar(
-                                  duration: Duration(seconds: 1),
-                                  content: Text('登录失败!'),
-                                  backgroundColor: Colors.red,
-                                );
-                                Scaffold.of(context).showSnackBar(snackBar);
+                                // 转译结果
+                                var res = convert.jsonDecode(response.toString());
+                                if (res["status"] == 1) {
+                                  // 设置登录token
+                                  StorageUtil.setStringItem(
+                                      'token', res['result']['token']);
+                                  loading.close();
+                                  final snackBar = SnackBar(
+                                    duration: Duration(seconds: 1),
+                                    content: Text('登录成功!'),
+                                    backgroundColor: Colors.green,
+                                  );
+                                  Scaffold.of(context).showSnackBar(snackBar);
+                                  Navigator.push(
+                                      context,
+                                      new MaterialPageRoute(
+                                          builder: (context) => new Home()));
+                                } else {
+                                  loading.close();
+                                  final snackBar = SnackBar(
+                                    duration: Duration(seconds: 1),
+                                    content: Text('登录失败!'),
+                                    backgroundColor: Colors.red,
+                                  );
+                                  Scaffold.of(context).showSnackBar(snackBar);
+                                }
                               }
-                            }
-                          },
-                        )
+                            },
+                          ),
+                        ),
                       ],
                     ),
                   )),
