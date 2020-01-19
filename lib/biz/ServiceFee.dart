@@ -4,6 +4,7 @@ import 'dart:convert' as convert;
 import 'package:flutter_hello_word/common/Loading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_hello_word/utils/storage_util.dart';
+import 'package:flutter_hello_word/biz/FeeHandle.dart';
 
 class ServiceFee extends StatefulWidget {
   @override
@@ -34,7 +35,8 @@ class _ServiceFeeState extends State<ServiceFee> {
       loading.show();
       Dio dio = new Dio();
       var data = {
-        'status': [1, 2, 3, 7],
+//        'status': [1, 2, 3, 7],
+        'status': [2, 7],
         'pagination': {'pageSize': 500, 'pageNo': 1}
       };
       response = await dio.post(
@@ -63,7 +65,7 @@ class _ServiceFeeState extends State<ServiceFee> {
 
   Widget _buildList() {
     List<Widget> tiles = [];
-    int counter =1;
+    int counter = 1;
     final pays = [
       {'name': '未设置'},
       {'name': '线上付款'},
@@ -79,36 +81,42 @@ class _ServiceFeeState extends State<ServiceFee> {
             leading: item['status'] == 3
                 ? Icon(Icons.tag_faces, size: 30, color: Colors.green)
                 : Icon(Icons.add_alert, size: 30, color: Colors.orangeAccent),
-            title:
-                Text('${counter.toString() + ':' + item["feeNo"]} -- ${pays[item['payMethod']]['name']}'),
+            title: Text(
+                '${counter.toString() + ':' + item["feeNo"]} -- ${pays[item['payMethod']]['name']}'),
             subtitle: Text('${item['supplierName']} : ${item['feeAmount']}元'),
             trailing: Icon(Icons.keyboard_arrow_right),
-            onTap:  (){
-              print('item on tap');
+            onTap: () {
+              print('on tap');
               print(item);
+              Navigator.of(context)
+                  .pushNamed('/FeeHandle', arguments: item['feeNo']);
             },
           ));
           counter++;
-        }else{
+        } else {
           print('已完成收费或无需收费');
-          print(item);
         }
       }
-      tiles.add(new Container(
-        child: RaisedButton(
-          child: Text('返回'),
-          color: Colors.blue,
-          textColor: Colors.white,
-          onPressed: () {
-            Navigator.pop(context, '返回登录');
-          },
-        ),
-      ));
+      if(counter == 1){
+        tiles.add(new Center(
+          child: Text('No data found.'),
+        ));
+      }
+//      tiles.add(new Container(
+//        child: RaisedButton(
+//          child: Text('返回'),
+//          color: Colors.blue,
+//          textColor: Colors.white,
+//          onPressed: () {
+//            Navigator.pop(context, '返回登录');
+//          },
+//        ),
+//      ));
       content = new Column(
         children: tiles,
       );
       return content;
-    }else{
+    } else {
       return new Center(
         child: Text('暂无数据'),
       );
