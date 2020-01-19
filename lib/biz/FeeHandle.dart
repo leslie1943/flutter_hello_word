@@ -62,10 +62,11 @@ class _FeeHandleState extends State<FeeHandle> {
         body: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              Card(
-                elevation: 5.0,
+              Container(
+                padding: EdgeInsets.all(20.0),
+//                elevation: 5.0,
                 child: Center(
-                  child: Image.network(_currentFee['proofUrl']),
+                  child: Image.network(_currentFee['proofUrl'],width: 200.0,height: 200.0,),
                 ),
               ),
               Card(

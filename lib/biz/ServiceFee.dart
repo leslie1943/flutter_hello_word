@@ -99,7 +99,7 @@ class _ServiceFeeState extends State<ServiceFee> {
       }
       if(counter == 1){
         tiles.add(new Center(
-          child: Text('No data found.'),
+          child: Text('暂无数据.'),
         ));
       }
 //      tiles.add(new Container(
