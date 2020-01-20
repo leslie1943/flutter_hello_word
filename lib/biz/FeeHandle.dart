@@ -3,8 +3,10 @@ import 'package:dio/dio.dart';
 import 'package:flutter_hello_word/utils/storage_util.dart';
 import 'package:flutter_hello_word/common/Loading.dart';
 import 'dart:convert' as convert;
-import 'package:flutter_hello_word/utils/request.dart';
+import 'package:flutter_hello_word/utils/baseUrl.dart';
 import 'package:flutter_hello_word/biz/ServiceFee.dart';
+import 'package:flutter_hello_word/utils/http_util.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class FeeHandle extends StatefulWidget {
   @override
@@ -18,35 +20,39 @@ class _FeeHandleState extends State<FeeHandle> {
   // 生命周期方法
   void initState() {
     super.initState();
-    _getCurrentFee().then((res) {
-      setState(() {
-        _currentFee = res;
-      });
+    // 防止initState前加载Widget
+    Future.delayed(Duration.zero, () {
+      this._getCurrentFee();
     });
   }
 
   // 调用接口初始数据.
   Future _getCurrentFee() async {
     try {
-      print(paramNo);
-      Response response = new Response();
-      String token = await StorageUtil.getStringItem('token');
-      Options options = Options(headers: {"authorization": token});
       Loading loading = Loading(context);
       loading.show();
-      Dio dio = new Dio();
-      String path = RequestUtil.getServerUrl() +
-          '/api/serviceFee/getServiceFeeDetail?feeNo=' +
-          this.paramNo +
-          '&type=2&nowT=' +
-          new DateTime.now().toString();
-      response = await dio.get(
-        path,
-        options: options,
-      );
-      var res = convert.jsonDecode(response.toString());
+      String token = await StorageUtil.getStringItem('token');
+      var headers = {'authorization': token};
+      var data = {
+        'feeNo': this.paramNo,
+        'type': 2,
+        'nowT': new DateTime.now().toString()
+      };
+      await HttpUtil.get('/api/serviceFee/getServiceFeeDetail',
+          data: data, headers: headers, success: (res) {
+        setState(() {
+          this._currentFee = res;
+        });
+      }, error: (errorMsg) {
+        Fluttertoast.showToast(
+            msg: errorMsg,
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIos: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white);
+      });
       loading.close();
-      return res['result'];
     } catch (e) {
       print(e.toString());
     }
@@ -63,10 +69,15 @@ class _FeeHandleState extends State<FeeHandle> {
           child: Column(
             children: <Widget>[
               Container(
-                padding: EdgeInsets.all(20.0),
-//                elevation: 5.0,
+                padding: EdgeInsets.all(15.0),
                 child: Center(
-                  child: Image.network(_currentFee['proofUrl'],width: 200.0,height: 200.0,),
+                  child: Image.network(
+                    _currentFee['proofUrl'] != null
+                        ? _currentFee['proofUrl']
+                        : 'https://images.unsplash.com/photo-1558980394-a3099ed53abb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80',
+//                    width: 200.0,
+//                    height: 200.0,
+                  ),
                 ),
               ),
               Card(
@@ -182,35 +193,33 @@ class _FeeHandleState extends State<FeeHandle> {
                   style: TextStyle(color: Colors.white),
                 ),
                 onPressed: () async {
-                  Response response = new Response();
-                  Loading loading = new Loading(context);
-                  loading.show();
-                  Dio dio = new Dio();
-                  print('request');
-                  print(this._currentFee);
-                  var payload = {
-                    'payNo': this._currentFee['serviceFeeVO']['payNo'],
-                    'status': 3
-                  };
-                  print('payload');
-                  print(payload);
-                  String token = await StorageUtil.getStringItem('token');
-                  Options options = Options(headers: {"authorization": token});
-                  String path = RequestUtil.getServerUrl() +
-                      '/api/serviceFee/updateReceiptPay';
-                  response = await dio.post(
-                    path,
-                    data: payload,
-                    options: options,
-                  );
-                  var res = convert.jsonDecode(response.toString());
-                  print('after');
-                  print(res);
-                  if (res['status'] == 1 && res['result'] == true) {
-                    Navigator.push(
-                        context,
-                        new MaterialPageRoute(
-                            builder: (context) => new ServiceFee()));
+                  try {
+                    Loading loading = new Loading(context);
+                    loading.show();
+                    String token = await StorageUtil.getStringItem('token');
+                    var headers = {"authorization": token};
+                    var payload = {
+                      'payNo': this._currentFee['serviceFeeVO']['payNo'],
+                      'status': 3
+                    };
+                    HttpUtil.post('/api/serviceFee/updateReceiptPay',
+                        data: payload, headers: headers, success: (res) {
+                      Navigator.push(
+                          context,
+                          new MaterialPageRoute(
+                              builder: (context) => new ServiceFee()));
+                    }, error: (errorMsg) {
+                      Fluttertoast.showToast(
+                          msg: errorMsg,
+                          toastLength: Toast.LENGTH_LONG,
+                          gravity: ToastGravity.CENTER,
+                          timeInSecForIos: 1,
+                          backgroundColor: Colors.red,
+                          textColor: Colors.white);
+                    });
+                    loading.close();
+                  } catch (e) {
+                    print(e);
                   }
                 },
               )

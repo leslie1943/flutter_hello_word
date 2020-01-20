@@ -29,7 +29,8 @@ class Login extends StatelessWidget {
                   Container(
                     child: Image.asset('static/image/epro.jpg'),
                   ),
-                  Container(child: Form(
+                  Container(
+                      child: Form(
                     key: _formKey,
                     child: Column(
                       children: <Widget>[
@@ -60,40 +61,35 @@ class Login extends StatelessWidget {
                         ),
                         Container(
                           padding: EdgeInsets.only(top: 30.0),
-                          child:  RaisedButton(
+                          child: RaisedButton(
                             child: Text('Login'),
                             color: Colors.blue,
-                            highlightColor:Colors.yellow,
+                            highlightColor: Colors.yellow,
                             textColor: Colors.white,
                             onPressed: () async {
                               if ((_formKey.currentState as FormState)
                                   .validate()) {
                                 Loading loading = Loading(context);
                                 loading.show();
-                                // Get parameters
+
+                                // parameters
                                 var data = {
                                   "identifier": _userNameController.text,
                                   "password": _passwordController.text,
                                 };
                                 Dio dio = new Dio();
-                                // parameter 1: request path
-                                // parameter 2: request parameters
                                 Response response = await dio.post(
                                   'https://epro-op.test.viewchain.net/opapi/auth/login?identifier=${data['identifier']}&password=${data['password']}',
                                 );
                                 // 转译结果
-                                var res = convert.jsonDecode(response.toString());
+                                var res =
+                                    convert.jsonDecode(response.toString());
+
                                 if (res["status"] == 1) {
                                   // 设置登录token
                                   StorageUtil.setStringItem(
                                       'token', res['result']['token']);
                                   loading.close();
-                                  final snackBar = SnackBar(
-                                    duration: Duration(seconds: 1),
-                                    content: Text('登录成功!'),
-                                    backgroundColor: Colors.green,
-                                  );
-                                  Scaffold.of(context).showSnackBar(snackBar);
                                   Navigator.push(
                                       context,
                                       new MaterialPageRoute(

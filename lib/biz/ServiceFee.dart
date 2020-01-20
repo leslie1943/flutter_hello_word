@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
-import 'dart:convert' as convert;
 import 'package:flutter_hello_word/common/Loading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_hello_word/utils/storage_util.dart';
-import 'package:flutter_hello_word/biz/FeeHandle.dart';
+import 'package:flutter_hello_word/utils/http_util.dart';
 
 class ServiceFee extends StatefulWidget {
   @override
@@ -18,46 +16,34 @@ class _ServiceFeeState extends State<ServiceFee> {
   @override
   void initState() {
     super.initState();
-    getData().then((res) {
-      setState(() {
-        formList = res['result']['data'].toList();
-      });
-    });
+    _getData();
   }
 
-  Future getData() async {
+  Future _getData() async {
     try {
-      Response response;
-      // 获取请求token
       String token = await StorageUtil.getStringItem('token');
-      Options options = Options(headers: {"authorization": token});
+      var headers = {"authorization": token};
       Loading loading = Loading(_context);
       loading.show();
-      Dio dio = new Dio();
       var data = {
-//        'status': [1, 2, 3, 7],
         'status': [2, 7],
         'pagination': {'pageSize': 500, 'pageNo': 1}
       };
-      response = await dio.post(
-          'https://epro-op.test.viewchain.net/opapi/api/serviceFee/getServiceFeeList',
-          options: options,
-          data: data);
-      print('response');
-      print(response);
-      var res = convert.jsonDecode(response.toString());
-      loading.close();
-      if (res['status'] == 1) {
-        return res;
-      } else {
+      await HttpUtil.post('/api/serviceFee/getServiceFeeList',
+          data: data, headers: headers, success: (res) {
+        setState(() {
+          formList = res['data'].toList();
+        });
+      }, error: (errMsg) {
         Fluttertoast.showToast(
-            msg: res['msg'],
+            msg: errMsg,
             toastLength: Toast.LENGTH_LONG,
             gravity: ToastGravity.CENTER,
             timeInSecForIos: 1,
             backgroundColor: Colors.red,
             textColor: Colors.white);
-      }
+      });
+      loading.close();
     } catch (e) {
       print(e);
     }
@@ -72,7 +58,6 @@ class _ServiceFeeState extends State<ServiceFee> {
       {'name': '线下付款'},
       {'name': '自动'}
     ];
-//    List<Widget> tiles = new List<Widget>();
     Widget content; // 单独的一个widget组件,返回需要生成的内容
     if (this.formList != null) {
       for (var item in this.formList) {
@@ -86,8 +71,8 @@ class _ServiceFeeState extends State<ServiceFee> {
             subtitle: Text('${item['supplierName']} : ${item['feeAmount']}元'),
             trailing: Icon(Icons.keyboard_arrow_right),
             onTap: () {
-              print('on tap');
-              print(item);
+//              print('on tap');
+//              print(item);
               Navigator.of(context)
                   .pushNamed('/FeeHandle', arguments: item['feeNo']);
             },
@@ -97,21 +82,11 @@ class _ServiceFeeState extends State<ServiceFee> {
           print('已完成收费或无需收费');
         }
       }
-      if(counter == 1){
+      if (counter == 1) {
         tiles.add(new Center(
           child: Text('暂无数据.'),
         ));
       }
-//      tiles.add(new Container(
-//        child: RaisedButton(
-//          child: Text('返回'),
-//          color: Colors.blue,
-//          textColor: Colors.white,
-//          onPressed: () {
-//            Navigator.pop(context, '返回登录');
-//          },
-//        ),
-//      ));
       content = new Column(
         children: tiles,
       );

@@ -4,6 +4,7 @@ import 'dart:convert' as convert;
 import 'package:flutter_hello_word/common/Loading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_hello_word/utils/storage_util.dart';
+import 'package:flutter_hello_word/utils/http_util.dart';
 
 class HospitalList extends StatefulWidget {
   @override
@@ -17,38 +18,30 @@ class _HospitalListState extends State<HospitalList> {
   @override
   void initState() {
     super.initState();
-    getData().then((res) {
-      setState(() {
-        formList = res['result']['hospitals'].toList();
-      });
-    });
+    _getData();
   }
 
-  Future getData() async {
+  Future _getData() async {
     try {
-      Response response;
-      // 获取请求token
       String token = await StorageUtil.getStringItem('token');
-      Options options = Options(headers: {"authorization": token});
+      var headers = {"authorization": token};
       Loading loading = Loading(_context);
       loading.show();
-      Dio dio = new Dio();
-      response = await dio.get(
-          'https://epro-op.test.viewchain.net/opapi/api/statistic/bigscreen?nowT=${new DateTime.now()}',
-          options: options);
-      var res = convert.jsonDecode(response.toString());
-      loading.close();
-      if (res['status'] == 1) {
-        return res;
-      } else {
+      await HttpUtil.get('/api/statistic/bigscreen',
+          data: null, headers: headers, success: (res) {
+        setState(() {
+          formList = res['hospitals'].toList();
+        });
+      }, error: (errMsg) {
         Fluttertoast.showToast(
-            msg: res['msg'],
+            msg: errMsg,
             toastLength: Toast.LENGTH_LONG,
             gravity: ToastGravity.CENTER,
             timeInSecForIos: 1,
             backgroundColor: Colors.red,
             textColor: Colors.white);
-      }
+      });
+      loading.close();
     } catch (e) {
       print(e);
     }
@@ -56,7 +49,6 @@ class _HospitalListState extends State<HospitalList> {
 
   Widget _buildList() {
     List<Widget> tiles = [];
-//    List<Widget> tiles = new List<Widget>();
     Widget content; // 单独的一个widget组件,返回需要生成的内容
     if (this.formList != null) {
       for (var item in this.formList) {
