@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_hello_word/utils/storage_util.dart';
 import 'package:flutter_hello_word/common/Loading.dart';
-import 'dart:convert' as convert;
-import 'package:flutter_hello_word/utils/baseUrl.dart';
 import 'package:flutter_hello_word/biz/ServiceFee.dart';
 import 'package:flutter_hello_word/utils/http_util.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -16,6 +14,14 @@ class FeeHandle extends StatefulWidget {
 class _FeeHandleState extends State<FeeHandle> {
   var _currentFee = {};
   String paramNo = '';
+  final pays = {
+    2:'线下付款'
+  };
+
+  final status = {
+    2:'支付待审核',
+    3:'支付完成'
+  };
   @override
   // 生命周期方法
   void initState() {
@@ -71,13 +77,9 @@ class _FeeHandleState extends State<FeeHandle> {
               Container(
                 padding: EdgeInsets.all(15.0),
                 child: Center(
-                  child: Image.network(
-                    _currentFee['proofUrl'] != null
-                        ? _currentFee['proofUrl']
-                        : 'https://images.unsplash.com/photo-1558980394-a3099ed53abb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80',
-//                    width: 200.0,
-//                    height: 200.0,
-                  ),
+                  child: FadeInImage.assetNetwork(
+                      placeholder: 'static/image/loading.gif',
+                      image: _currentFee['proofUrl']),
                 ),
               ),
               Card(
@@ -104,9 +106,9 @@ class _FeeHandleState extends State<FeeHandle> {
                               style: TextStyle(color: Colors.redAccent),
                             ),
                             Text('付款渠道:' +
-                                '${_currentFee['serviceFeeVO']['payMethod']}'),
+                                '${pays[_currentFee['serviceFeeVO']['payMethod']]}'),
                             Text('状 态:' +
-                                '${_currentFee['serviceFeeVO']['status']}'),
+                                '${status[_currentFee['serviceFeeVO']['status']]}',style: TextStyle(color:Colors.pinkAccent),),
                             Text('创建时间	:' +
                                 '${_currentFee['serviceFeeVO']['createTime']}'),
                             Text('付款时间	:' +
