@@ -21,6 +21,9 @@ class AuthList extends StatelessWidget {
               width: 100.0,
               height: 200.0,
               color: Colors.blue,
+              child: (
+              Text('Hello 2020')
+              ),
             ),
           ),
         )
