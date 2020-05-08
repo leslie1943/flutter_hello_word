@@ -32,7 +32,7 @@ class _ServiceFeeState extends State<ServiceFee> {
       await HttpUtil.post('/api/serviceFee/getServiceFeeList',
           data: data, headers: headers, success: (res) {
         setState(() {
-          formList = res['data'].toList();
+          formList = res['pageData']['data'].toList();
         });
       }, error: (errMsg) {
         Fluttertoast.showToast(
@@ -71,8 +71,6 @@ class _ServiceFeeState extends State<ServiceFee> {
             subtitle: Text('${item['supplierName']} : ${item['feeAmount']}元'),
             trailing: Icon(Icons.keyboard_arrow_right),
             onTap: () {
-//              print('on tap');
-//              print(item);
               Navigator.of(context)
                   .pushNamed('/FeeHandle', arguments: item['feeNo']);
             },
